@@ -1,0 +1,58 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 47533.55it/s]
+cpu fp32 reference done
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 27589.59it/s]
+[eager] 1/16 done
+[eager] 2/16 done
+[eager] 3/16 done
+[eager] 4/16 done
+[eager] 5/16 done
+[eager] 6/16 done
+[eager] 7/16 done
+[eager] 8/16 done
+[eager] 9/16 done
+[eager] 10/16 done
+[eager] 11/16 done
+[eager] 12/16 done
+[eager] 13/16 done
+[eager] 14/16 done
+[eager] 15/16 done
+[eager] 16/16 done
+[compile] 1/16 done
+[compile] 2/16 done
+[compile] 3/16 done
+[compile] 4/16 done
+[compile] 5/16 done
+[compile] 6/16 done
+[compile] 7/16 done
+[compile] 8/16 done
+[compile] 9/16 done
+[compile] 10/16 done
+[compile] 11/16 done
+[compile] 12/16 done
+[compile] 13/16 done
+[compile] 14/16 done
+[compile] 15/16 done
+[compile] 16/16 done
+
+=== per sentence (label: 0=negative, 1=positive) ===
+ 1  cpu=1  eager=1  compile=1  | a stirring , funny and finally transporting r
+ 2  cpu=0  eager=0  compile=0  | the film is strictly routine and never surpri
+ 3  cpu=1  eager=1  compile=1  | one of the best performances of the year , ha
+ 4  cpu=0  eager=0  compile=0  | it 's so laddish and juvenile , only teenage 
+ 5  cpu=1  eager=1  compile=1  | a masterpiece of quiet , devastating storytel
+ 6  cpu=0  eager=0  compile=0  | the plot is paper thin and the dialogue is wo
+ 7  cpu=1  eager=1  compile=1  | an absolute delight from start to finish
+ 8  cpu=0  eager=0  compile=0  | painfully slow and utterly forgettable
+ 9  cpu=1  eager=1  compile=1  | the acting elevates an otherwise ordinary scr
+10  cpu=0  eager=0  compile=0  | i wanted to walk out after twenty minutes
+11  cpu=1  eager=1  compile=1  | visually stunning with a soundtrack to match
+12  cpu=0  eager=0  compile=0  | a bland , lifeless retread of better films
+13  cpu=1  eager=1  compile=1  | heartfelt , sincere , and genuinely moving
+14  cpu=0  eager=0  compile=0  | the jokes land with a thud every single time
+15  cpu=1  eager=1  compile=1  | an ambitious film that mostly succeeds
+16  cpu=0  eager=0  compile=0  | a complete waste of a talented cast
+
+=== summary ===
+eager vs compile: max |logit diff| = 0.0156, label match = 16/16
+eager vs cpu_fp32: max |logit diff| = 0.0320, label match = 16/16
+compile vs cpu_fp32: max |logit diff| = 0.0320, label match = 16/16
