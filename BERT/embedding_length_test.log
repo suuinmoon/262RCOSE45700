@@ -1,0 +1,21 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 40312.49it/s]
+len=  16  OK    724.9 ms
+len=  32  OK    576.1 ms
+len=  48  FAIL  UnsupportedOpError after 496.7 ms
+len=  64  FAIL  UnsupportedOpError after 369.9 ms
+len=  96  OK    760.6 ms
+len= 128  OK    246.6 ms
+len= 192  OK    812.9 ms
+len= 256  OK    492.3 ms
+len= 512  OK    623.1 ms
+
+=== summary ===
+  16  OK
+  32  OK
+  48  FAIL
+  64  FAIL
+  96  OK
+ 128  OK
+ 192  OK
+ 256  OK
+ 512  OK
