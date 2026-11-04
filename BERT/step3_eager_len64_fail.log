@@ -1,0 +1,120 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 47214.11it/s]
+
+===== eager =====
+[eager] call 0  len=128: 5830.2 ms
+[eager] call 1  len=128: 23.5 ms
+Traceback (most recent call last):
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/compiler/__init__.py", line 83, in compile
+    runnable = compiler.compile(
+               ^^^^^^^^^^^^^^^^^
+furiosa.torch._C.error.CompileError: (cache at /root/.cache/furiosa/compiler/8674ea7edf1f0a36)
+
+Caused by:
+    graph.count_valid_operators_if(|op|
+    !(op.is_low_level() || op.is_host_transfer())) (1) != 0 (0)
+
+Location:
+    /usr/local/cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/fc43f6a7/crates/global-compiler/src/lib.rs:60:26
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/262RCOSE45700-msi/BERT/step3_recompile.py", line 48, in <module>
+    timed_call(fn, make_input(L), f"[{name}] call {i}  len={L}")
+  File "/root/262RCOSE45700-msi/BERT/step3_recompile.py", line 34, in timed_call
+    out = fn(**x)
+          ^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/utils/generic.py", line 943, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/models/bert/modeling_bert.py", line 1093, in forward
+    outputs = self.bert(
+              ^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/utils/generic.py", line 1081, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/utils/output_capturing.py", line 287, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/models/bert/modeling_bert.py", line 653, in forward
+    embedding_output = self.embeddings(
+                       ^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/transformers/models/bert/modeling_bert.py", line 99, in forward
+    inputs_embeds = self.word_embeddings(input_ids)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/modules/sparse.py", line 191, in forward
+    return F.embedding(
+           ^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/nn/functional.py", line 2567, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1181, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/eager.py", line 19, in run_aten_op
+    return _run_aten_op(qualified_aten_op_name, op_callable, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1181, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/eager.py", line 42, in _run_aten_op
+    raise e
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/eager.py", line 38, in _run_aten_op
+    m = aten_op.compile_and_load(device)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/aten.py", line 173, in compile_and_load
+    return _compile_and_load_cached(self, device).out()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/aten.py", line 28, in out
+    raise self.cached.with_traceback(self.original_traceback)
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_backend/aten.py", line 96, in _compile
+    compiled = CompileModule.from_exported(exported, task_name=task_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/_module/runnable.py", line 222, in from_exported
+    compiler.compile(exported, compiler_config, task_name=task_name)
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/profiler/__init__.py", line 35, in wrapped
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/furiosa/torch/compiler/__init__.py", line 94, in compile
+    raise error.UnsupportedOpError(
+furiosa.torch._C.error.UnsupportedOpError: failed to compile
+graph():
+    %args_0 : [num_users=1] = placeholder[target=args_0]
+    %args_1 : [num_users=1] = placeholder[target=args_1]
+    %index : [num_users=1] = call_function[target=torch.ops.aten.index.Tensor](args = (%args_0, [%args_1]), kwargs = {})
+    return (index,)
+source:
+    index                ../../venv/lib/python3.12/site-packages/transformers/models/bert/modeling_bert.py:99 inputs_embeds = self.word_embeddings(input_ids)
+compile error:
+(cache at /root/.cache/furiosa/compiler/8674ea7edf1f0a36)
+
+Caused by:
+    graph.count_valid_operators_if(|op|
+    !(op.is_low_level() || op.is_host_transfer())) (1) != 0 (0)
+
+Location:
+    /usr/local/cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/fc43f6a7/crates/global-compiler/src/lib.rs:60:26
