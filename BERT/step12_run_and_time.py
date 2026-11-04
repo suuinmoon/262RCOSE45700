@@ -1,5 +1,4 @@
-# 1단계(실행 확인) + 2단계(시간 측정) 통합
-# 사용: python step12_run_and_time.py 2>&1 | tee step12.log
+# Usage: python step12_run_and_time.py 2>&1 | tee step12.log
 import time
 import traceback
  
@@ -7,8 +6,8 @@ import torch
 import furiosa.torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
  
-# transformers의 attention mask 생성이 NPU 미지원 int64 연산(arange/add 등)을 타므로 우회.
-# 입력을 패딩 없이 128토큰으로 꽉 채우므로 마스크 없음 = 전체 attend = 수학적으로 동일.
+# Bypass mask creation (uses int64 ops unsupported on NPU).
+# Input is fully filled with no padding, so no mask == attend to all tokens.
 import transformers.models.bert.modeling_bert as _bert_mod
 _bert_mod.create_bidirectional_mask = lambda *a, **k: None
  
@@ -23,22 +22,19 @@ def prepare():
     model = AutoModelForSequenceClassification.from_pretrained(MODEL)
     model = model.to(torch.bfloat16).eval()
     model = model.to(DEV)
-    # 패딩이 생기지 않도록 긴 문장을 128토큰으로 잘라 꽉 채움
     text = "this movie was absolutely wonderful and i loved it . " * 20
     x = tok(text, padding="max_length", max_length=128, truncation=True,
             return_tensors="pt")
-    x.pop("attention_mask")  # 마스크 생성 경로 회피 (위 패치와 세트)
-    # 토큰 ID는 정수 그대로, dtype 변환 없이 장치로만 이동
+    x.pop("attention_mask")
     x = {k: v.to(DEV) for k, v in x.items()}
     return model, x
  
  
 def sync_run(fn, x):
-    """호출 시작부터 logits를 CPU로 가져올 때까지(= NPU 연산 완료까지) 측정"""
     t0 = time.perf_counter()
     with torch.no_grad():
         out = fn(**x)
-    _ = out.logits.cpu()  # 동기화 지점
+    _ = out.logits.cpu()  # sync
     return time.perf_counter() - t0
  
  
@@ -65,14 +61,14 @@ def main():
         try:
             bench("eager", model, x)
         except Exception:
-            print("[eager] ERROR — 아래 메시지도 보고서용 결과임", flush=True)
+            print("[eager] ERROR", flush=True)
             traceback.print_exc()
  
         try:
             compiled = torch.compile(model, backend=furiosa.torch.backend)
             bench("compile", compiled, x)
         except Exception:
-            print("[compile] ERROR — 아래 메시지도 보고서용 결과임", flush=True)
+            print("[compile] ERROR", flush=True)
             traceback.print_exc()
  
  
