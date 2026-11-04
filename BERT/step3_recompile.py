@@ -1,5 +1,6 @@
 # Usage: TORCH_LOGS="recompiles,graph_breaks" python step3_recompile.py 2>&1 | tee step3.log
 import time
+import traceback
  
 import torch
 import furiosa.torch
@@ -30,10 +31,15 @@ def make_input(length):
  
 def timed_call(fn, x, tag):
     t0 = time.perf_counter()
-    with torch.no_grad():
-        out = fn(**x)
-    _ = out.logits.cpu()  # sync
-    print(f"{tag}: {(time.perf_counter() - t0) * 1000:.1f} ms", flush=True)
+    try:
+        with torch.no_grad():
+            out = fn(**x)
+        _ = out.logits.cpu()  # sync
+        print(f"{tag}: {(time.perf_counter() - t0) * 1000:.1f} ms", flush=True)
+    except Exception as e:
+        elapsed = (time.perf_counter() - t0) * 1000
+        print(f"{tag}: ERROR after {elapsed:.1f} ms -> {type(e).__name__}", flush=True)
+        traceback.print_exc()
  
  
 SEQUENCE = [128, 128, 64, 64, 128, 128]
