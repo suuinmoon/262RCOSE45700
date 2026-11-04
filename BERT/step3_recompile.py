@@ -1,42 +1,43 @@
-# 3단계: 재컴파일/그래프 브레이크 관찰
-# 사용: TORCH_LOGS="recompiles,graph_breaks" python step3_recompile.py 2>&1 | tee step3.log
-#  - 재컴파일 로그는 stderr로 나오므로 2>&1 필수
+# Usage: TORCH_LOGS="recompiles,graph_breaks" python step3_recompile.py 2>&1 | tee step3.log
 import time
-
+ 
 import torch
 import furiosa.torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
+ 
+# Bypass mask creation (uses int64 ops unsupported on NPU).
+# Inputs are fully filled with no padding, so no mask == attend to all tokens.
+import transformers.models.bert.modeling_bert as _bert_mod
+_bert_mod.create_bidirectional_mask = lambda *a, **k: None
+ 
 MODEL = "textattack/bert-base-uncased-SST-2"
 DEV = torch.device("furiosa:0")
-
+ 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = (
     AutoModelForSequenceClassification.from_pretrained(MODEL)
     .to(torch.bfloat16).eval().to(DEV)
 )
-
-
+ 
+ 
 def make_input(length):
-    x = tok(
-        "a short sentence for the recompilation check",
-        padding="max_length", max_length=length, truncation=True,
-        return_tensors="pt",
-    )
+    text = "a short sentence for the recompilation check . " * 30
+    x = tok(text, padding="max_length", max_length=length, truncation=True,
+            return_tensors="pt")
+    x.pop("attention_mask")
     return {k: v.to(DEV) for k, v in x.items()}
-
-
+ 
+ 
 def timed_call(fn, x, tag):
     t0 = time.perf_counter()
     with torch.no_grad():
         out = fn(**x)
-    _ = out.logits.cpu()
+    _ = out.logits.cpu()  # sync
     print(f"{tag}: {(time.perf_counter() - t0) * 1000:.1f} ms", flush=True)
-
-
-# 각 길이를 2번씩 호출: 1번째 = (재)컴파일 여부, 2번째 = 안정 상태
+ 
+ 
 SEQUENCE = [128, 128, 64, 64, 128, 128]
-
+ 
 with furiosa.torch.config.cpu_fallback(False):
     for name, fn in [
         ("eager", model),
@@ -45,3 +46,4 @@ with furiosa.torch.config.cpu_fallback(False):
         print(f"\n===== {name} =====", flush=True)
         for i, L in enumerate(SEQUENCE):
             timed_call(fn, make_input(L), f"[{name}] call {i}  len={L}")
+ 
